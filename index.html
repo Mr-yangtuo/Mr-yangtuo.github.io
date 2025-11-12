@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>围攻怪兽卡牌查询</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header {
+            background: linear-gradient(90deg, #e94560 0%, #f05945 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+            position: relative;
+        }
+
+        .search-section {
+            padding: 30px 20px;
+            background: rgba(40, 40, 60, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-container {
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        #searchInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            font-size: 16px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        #searchBtn {
+            padding: 15px 30px;
+            background: #0f3460;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        #searchBtn:hover {
+            background: #1a508b;
+        }
+
+        .category-section {
+            padding: 20px;
+            background: rgba(30, 30, 46, 0.8);
+        }
+
+        .category-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+            font-size: 1.3rem;
+        }
+
+        .category-filter {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            border: 2px solid;
+            background: transparent;
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .category-btn:hover::before {
+            left: 100%;
+        }
+
+        .category-btn[data-category="all"] {
+            border-color: #8d8daa;
+        }
+
+        .category-btn[data-category="火山"] {
+            border-color: #e94560;
+        }
+
+        .category-btn[data-category="深海"] {
+            border-color: #1a508b;
+        }
+
+        .category-btn[data-category="沼泽"] {
+            border-color: #4aa96c;
+        }
+
+        .category-btn[data-category="丛林"] {
+            border-color: #ff9a3c;
+        }
+
+        .category-btn.active {
+            color: white;
+        }
+
+        .category-btn.active[data-category="all"] {
+            background: #8d8daa;
+        }
+
+        .category-btn.active[data-category="火山"] {
+            background: #e94560;
+        }
+
+        .category-btn.active[data-category="深海"] {
+            background: #1a508b;
+        }
+
+        .category-btn.active[data-category="沼泽"] {
+            background: #4aa96c;
+        }
+
+        .category-btn.active[data-category="丛林"] {
+            background: #ff9a3c;
+        }
+
+        .results-info {
+            text-align: center;
+            padding: 15px;
+            color: #ccc;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 30px;
+        }
+
+        .card {
+            background: transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-image {
+            width: 100%;
+            height: auto;
+            max-width: 750px;
+            max-height: 1075px;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .card-list {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                padding: 20px 15px;
+                gap: 20px;
+            }
+        }
+
+        .no-cards {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+            grid-column: 1 / -1;
+        }
+
+        .no-cards h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(30, 30, 46, 0.8);
+            color: #888;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+                border-radius: 10px;
+            }
+
+            #searchBtn {
+                border-radius: 0 0 10px 10px;
+            }
+
+            .category-filter {
+                gap: 10px;
+            }
+
+            .card-list {
+                grid-template-columns: 1fr;
+                padding: 20px 15px;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>围攻怪兽卡牌查询</h1>
+            <p class="subtitle">探索四大元素领域的强大卡牌</p>
+        </header>
+
+        <section class="search-section">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="输入卡牌名称、类型或描述...">
+                <button id="searchBtn">搜索</button>
+            </div>
+        </section>
+
+        <section class="category-section">
+            <h2 class="category-title">元素领域</h2>
+            <div class="category-filter">
+                <button class="category-btn active" data-category="all">全部卡牌</button>
+                <button class="category-btn" data-category="火山">火山领域</button>
+                <button class="category-btn" data-category="深海">深海领域</button>
+                <button class="category-btn" data-category="沼泽">沼泽领域</button>
+                <button class="category-btn" data-category="丛林">丛林领域</button>
+            </div>
+        </section>
+
+        <div class="results-info">
+            找到 <span id="cardCount">0</span> 张卡牌
+        </div>
+
+        <div class="card-list" id="cardList">
+            <div class="no-cards">
+                <div class="loading"></div>
+                <h3>正在加载卡牌数据...</h3>
+                <p>请稍候</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>围攻怪兽卡牌查询系统 &copy; 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        // 卡牌数据
+        let cards = [];
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载卡牌数据
+            loadCards();
+
+            // 设置搜索功能
+            setupSearch();
+
+            // 设置分类筛选
+            setupCategoryFilter();
+        });
+
+                // 加载卡牌数据
+        async function loadCards() {
+            try {
+                console.log('开始加载 cards.json...');
+                const response = await fetch('cards.json');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP错误! 状态: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('成功加载卡牌数据:', data);
+
+                cards = data.cards;
+                renderCards(cards);
+            } catch (error) {
+                console.error('加载卡牌数据失败:', error);
+                console.error('错误详情:', error.message);
+
+                document.getElementById('cardList').innerHTML = `
+                    <div class="no-cards">
+                        <h3>加载卡牌数据失败</h3>
+                        <p>错误: ${error.message}</p>
+                        <p>请检查 cards.json 文件是否存在且格式正确</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 设置搜索功能
+        function setupSearch() {
+            const searchBtn = document.getElementById('searchBtn');
+            const searchInput = document.getElementById('searchInput');
+
+            // 搜索按钮点击事件
+            searchBtn.addEventListener('click', performSearch);
+
+            // 输入时实时搜索
+            searchInput.addEventListener('input', performSearch);
+
+            // 回车键搜索
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        }
+
+        // 执行搜索
+        function performSearch() {
+            const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+            const activeCategory = document.querySelector('.category-btn.active').getAttribute('data-category');
+
+            // 筛选卡牌
+            let filteredCards = cards;
+
+            // 按分类筛选
+            if (activeCategory !== 'all') {
+                filteredCards = filteredCards.filter(card => card.attribute === activeCategory);
+            }
+
+            // 按关键词搜索
+            if (keyword) {
+                filteredCards = filteredCards.filter(card =>
+                    card.name.toLowerCase().includes(keyword) ||
+                    card.description.toLowerCase().includes(keyword) ||
+                    card.type.toLowerCase().includes(keyword)
+                );
+            }
+
+            // 渲染筛选后的卡牌
+            renderCards(filteredCards);
+        }
+
+        // 设置分类筛选
+        function setupCategoryFilter() {
+            const categoryButtons = document.querySelectorAll('.category-btn');
+
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除其他按钮的active类
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+
+                    // 给当前点击的按钮添加active类
+                    this.classList.add('active');
+
+                    // 执行筛选
+                    performSearch();
+                });
+            });
+        }
+
+        // 渲染卡牌列表
+        function renderCards(cardsToRender) {
+            const cardList = document.getElementById('cardList');
+            const cardCount = document.getElementById('cardCount');
+
+            // 更新卡牌数量
+            cardCount.textContent = cardsToRender.length;
+
+            if (cardsToRender.length === 0) {
+                cardList.innerHTML = '<div class="no-cards"><h3>未找到相关卡牌</h3><p>请尝试其他搜索条件</p></div>';
+                return;
+            }
+
+            // 生成卡牌卡片HTML - 只显示图片
+            const cardsHTML = cardsToRender.map(card => `
+                <div class="card">
+                    <img src="${card.image}" alt="${card.name}" class="card-image"
+                         onerror="this.src='data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22750%22 height=%221075%22 viewBox=%220 0 750 1075%22><rect width=%22750%22 height=%221075%22 fill=%22%23333%22/><text x=%22375%22 y=%22537%22 font-family=%22Arial%22 font-size=%2224%22 fill=%22%23fff%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>${card.name}</text></svg>'">
+                </div>
+            `).join('');
+
+            cardList.innerHTML = cardsHTML;
+        }
+    </script>
+</body>
+</html>
