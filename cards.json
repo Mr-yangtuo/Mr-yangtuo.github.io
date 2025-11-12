@@ -1,0 +1,11 @@
+{
+  "cards": [
+    {
+      "id": 1,
+      "name": "熔灵兽",
+      "type": "怪兽",
+      "attribute": "火山",
+      "image": "card_images/火山png/熔灵兽.png"
+    }
+  ]
+}
