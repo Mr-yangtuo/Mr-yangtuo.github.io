@@ -1,0 +1,207 @@
+{
+  "date": "2026-11-17",
+  "subjects": 53,
+  "windows": 3681,
+  "methods": {
+    "lr": {
+      "accuracy": 0.8223308883455582,
+      "balanced_accuracy": 0.8260890967265567,
+      "macro_f1": 0.8198612690811135,
+      "auc": 0.8885534316004413,
+      "cm": [
+        [
+          1729,
+          422
+        ],
+        [
+          232,
+          1298
+        ]
+      ],
+      "ci95": [
+        0.7674285811570023,
+        0.8703703868700408
+      ],
+      "subject_accuracy_mean": 0.8183661092437079,
+      "train_accuracy_mean": 0.8345448749208988,
+      "training_seconds": 0.07644939999954659
+    },
+    "svm": {
+      "accuracy": 0.8272208638956805,
+      "balanced_accuracy": 0.8331979653786201,
+      "macro_f1": 0.8252897464416397,
+      "auc": 0.8910283406714616,
+      "cm": [
+        [
+          1716,
+          435
+        ],
+        [
+          201,
+          1329
+        ]
+      ],
+      "ci95": [
+        0.7747100750102086,
+        0.8730795438554466
+      ],
+      "subject_accuracy_mean": 0.8269289327153792,
+      "train_accuracy_mean": 0.8648469277623981,
+      "training_seconds": 1.6099334999998973
+    },
+    "rf": {
+      "accuracy": 0.8177125781037762,
+      "balanced_accuracy": 0.8218544042442639,
+      "macro_f1": 0.8153081338341199,
+      "auc": 0.8862240696681585,
+      "cm": [
+        [
+          1715,
+          436
+        ],
+        [
+          235,
+          1295
+        ]
+      ],
+      "ci95": [
+        0.7645437617824802,
+        0.8645849590236865
+      ],
+      "subject_accuracy_mean": 0.8188928569779635,
+      "train_accuracy_mean": 0.9370447626510774,
+      "training_seconds": 3.6865250999990167
+    },
+    "hgb": {
+      "accuracy": 0.8212442271121978,
+      "balanced_accuracy": 0.8242158230098175,
+      "macro_f1": 0.8185687858652975,
+      "auc": 0.8868758413019633,
+      "cm": [
+        [
+          1735,
+          416
+        ],
+        [
+          242,
+          1288
+        ]
+      ],
+      "ci95": [
+        0.7714119649874485,
+        0.864993652661678
+      ],
+      "subject_accuracy_mean": 0.8190222585005934,
+      "train_accuracy_mean": 0.9408431304934,
+      "training_seconds": 3.8781310999993366
+    },
+    "stack": {
+      "accuracy": 0.8264058679706602,
+      "balanced_accuracy": 0.8323119205841332,
+      "macro_f1": 0.8244554887050489,
+      "auc": 0.8912954303060137,
+      "cm": [
+        [
+          1715,
+          436
+        ],
+        [
+          203,
+          1327
+        ]
+      ],
+      "ci95": [
+        0.7722979509988406,
+        0.8735893037892437
+      ],
+      "subject_accuracy_mean": 0.824975382410881,
+      "train_accuracy_mean": 0.8677366009311711,
+      "training_seconds": 17.019015699998818
+    }
+  },
+  "parameters": {
+    "lr": {
+      "C": 1,
+      "class_weight": "balanced",
+      "max_iter": 2000
+    },
+    "svm": {
+      "C": 1,
+      "kernel": "rbf",
+      "gamma": "scale",
+      "class_weight": "balanced",
+      "probability": false
+    },
+    "rf": {
+      "n_estimators": 300,
+      "max_depth": null,
+      "min_samples_leaf": 5,
+      "max_features": "sqrt",
+      "class_weight": "balanced",
+      "n_jobs": 4
+    },
+    "hgb": {
+      "max_iter": 200,
+      "learning_rate": 0.05,
+      "max_leaf_nodes": 15,
+      "min_samples_leaf": 20,
+      "l2_regularization": 1,
+      "class_weight": "balanced",
+      "early_stopping": false
+    },
+    "stack": {
+      "bases": [
+        "lr",
+        "svm",
+        "rf"
+      ],
+      "inner_folds": 4,
+      "meta": "StandardScaler + LogisticRegression",
+      "meta_C": 1,
+      "meta_class_weight": "balanced"
+    }
+  },
+  "paired_vs_lr": [
+    {
+      "method": "svm",
+      "delta_accuracy": 0.004889975550122272,
+      "ci95": [
+        -0.006478649262929085,
+        0.01672736364400708
+      ],
+      "fixed_baseline_errors": 132,
+      "new_errors": 114
+    },
+    {
+      "method": "rf",
+      "delta_accuracy": -0.004618310241782053,
+      "ci95": [
+        -0.01595739946117799,
+        0.008244190708899176
+      ],
+      "fixed_baseline_errors": 114,
+      "new_errors": 131
+    },
+    {
+      "method": "hgb",
+      "delta_accuracy": -0.0010866612333604309,
+      "ci95": [
+        -0.0148503955088611,
+        0.01290001834520471
+      ],
+      "fixed_baseline_errors": 147,
+      "new_errors": 151
+    },
+    {
+      "method": "stack",
+      "delta_accuracy": 0.004074979625101949,
+      "ci95": [
+        -0.005190675268293145,
+        0.013558682692165808
+      ],
+      "fixed_baseline_errors": 102,
+      "new_errors": 87
+    }
+  ],
+  "common_errors": 461
+}
